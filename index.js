@@ -22,5 +22,6 @@ function generateMaze() {
   /*
   given a grid of cells. use recursive division to 
   create a maze where a cell can either be a wall or open.
+  
   */
 }
