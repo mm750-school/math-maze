@@ -31,38 +31,38 @@ function generateMaze(size) {
 
   let current_cell = starting_cell
 
-  const current_x = current_cell.x
-  const current_y = current_cell.y
-  //current cell has undefined valuess
+  if (current_cell.x + 1 <= size) {
+    walls.push(new Vector(current_cell.x + 1, current_cell.y))
+  }
+  if (current_cell.x - 1 >= 0) {
+    walls.push(new Vector(current_cell.x - 1, current_cell.y))
+  }
+  if (current_cell.y + 1 <= size) {
+    walls.push(new Vector(current_cell.x, current_cell.y + 1))
+  }
+  if (current_cell.y - 1 >= 0) {
+    walls.push(new Vector(current_cell.x, current_cell.y - 1))
+  }
 
-  if (current_x + 1 <= size) {
-    walls.push([[current_cell.x + 1][current_cell.y]])
-  }
-  if (current_x - 1 >= 0) {
-    walls.push([[current_cell.x - 1][current_cell.y]])
-  }
-  if (current_y + 1 <= size) {
-    walls.push([[current_cell.x][current_cell.y + 1]])
-  }
-  if (current_y - 1 >= 0) {
-    walls.push([[current_cell.x][current_cell.y - 1]])
-  }
-  console.log(walls)
   while (walls.length != 0) {
     const random = Math.floor(Math.random() * walls.length)
 
     let wall = walls[random]
-    console.log(walls)
+
     let adjacent_values = getAdjacentValues(grid, wall)
     let adjacent_value_count = 0
+    console.log(adjacent_values)
     adjacent_values.forEach(value => {
       if (value == 0) {
         adjacent_value_count++
       }
     })
+    console.log(adjacent_value_count)
     if (adjacent_value_count == 1) {
+
       grid[wall.x][wall.y] = 1
       let adjacent_cells = getAdjacentCells(grid, wall)
+      console.log(adjacent_cells)
       for (let i = 0; i < adjacent_cells.length; i++) {
         if (adjacent_values[i] == 0) {
           walls.push(adjacent_cells[i])
@@ -74,6 +74,7 @@ function generateMaze(size) {
       walls.splice(index, 1)
     }
   }
+  console.log("below is maze")
   console.log(grid)
 
   /*
@@ -116,7 +117,7 @@ function getAdjacentValues(grid, current_cell) {
   let values = []
 
   cells.forEach(cell => {
-    values.push(grid[cell.x][cell.y])
+    values.push(grid[cell.x | 0][cell.y | 0])
   });
   return values
 }
