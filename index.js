@@ -26,12 +26,15 @@ generateMaze(size)
 function generateMaze(size) {
   /*
       grid array: 0 = wall cell, 1 = passage
+      visited array: 0 = unvisited, 1 = visited
   */
   let grid = Array.from(Array(size), _ => Array(size).fill(0));
+  let visited = Array.from(Array(size), _ => Array(size).fill(0));
   let walls = []
 
   let current_cell = new Vector(1, 1)
-  grid[current_cell.x][current_cell.y] = 1
+  grid[current_cell.x][current_cell.y] = 1 // passage
+  visited[current_cell.x][current_cell.y] = 1 // visited
 
   if (current_cell.x + 1 <= size) {
     walls.push(new Vector(current_cell.x + 1, current_cell.y))
@@ -47,27 +50,30 @@ function generateMaze(size) {
   }
 
   while (walls.length != 0) {
+    console.log("length: " + walls.length)
     const random = Math.floor(Math.random() * walls.length)
 
     let wall = walls[random]
 
-    let adjacent_values = getAdjacentValues(grid, wall)
-    console.log("adj" + adjacent_values)
+    let adjacent_visited = getAdjacentValues(grid, visited, wall)
+    console.log("adj" + adjacent_visited)
 
-    let adjacent_value_count = 0
+    let adjacent_visited_count = 0
 
-    adjacent_values.forEach(value => {
+    adjacent_visited.forEach(value => {
       if (value == 1) {
-        adjacent_value_count++
+        adjacent_visited_count++
       }
     })
-    if (adjacent_value_count == 1) {
+    if (adjacent_visited_count == 1) {
       console.log("WE HSVE WALL")
-      grid[wall.x][wall.y] = 1
+      grid[wall.x][wall.y] = 1 // passage
       let adjacent_cells = getAdjacentCells(grid, wall)
       for (let i = 0; i < adjacent_cells.length; i++) {
-        if (adjacent_values[i] == 0) {
+        if (adjacent_visited[i] == 0) {
           walls.push(adjacent_cells[i])
+          visited[adjacent_cells[i].x][adjacent_cells[i].y]
+          console.log("walls.length + 1")
         }
       }
     }
@@ -106,12 +112,12 @@ function getAdjacentCells(grid, current_cell) {
   }
   return adjacent
 }
-function getAdjacentValues(grid, current_cell) {
+function getAdjacentValues(grid, visited, current_cell) {
   //wraps getAdjacentCells
   const cells = getAdjacentCells(grid, current_cell)
   let values = []
   cells.forEach(cell => {
-    values.push(grid[cell.x | 0][cell.y | 0])
+    values.push(visited[cell.x | 0][cell.y | 0])
   });
   return values
 }
