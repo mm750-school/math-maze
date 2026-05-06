@@ -3,6 +3,9 @@ class Vector {
     this.x = x | 0
     this.y = y | 0
   }
+  toJSON() {
+    return { type: "Vector", x: this.x, y: this.y }
+  }
 }
 
 const canvas = document.getElementById("canvas");
@@ -27,9 +30,8 @@ function generateMaze(size) {
   let grid = Array.from(Array(size), _ => Array(size).fill(0));
   let walls = []
 
-  const starting_cell = new Vector(0, 0)
-
-  let current_cell = starting_cell
+  let current_cell = new Vector(1, 1)
+  grid[current_cell.x][current_cell.y] = 1
 
   if (current_cell.x + 1 <= size) {
     walls.push(new Vector(current_cell.x + 1, current_cell.y))
@@ -50,29 +52,26 @@ function generateMaze(size) {
     let wall = walls[random]
 
     let adjacent_values = getAdjacentValues(grid, wall)
+    console.log("adj" + adjacent_values)
+
     let adjacent_value_count = 0
-    console.log(adjacent_values)
+
     adjacent_values.forEach(value => {
-      if (value == 0) {
+      if (value == 1) {
         adjacent_value_count++
       }
     })
-    console.log(adjacent_value_count)
     if (adjacent_value_count == 1) {
-
+      console.log("WE HSVE WALL")
       grid[wall.x][wall.y] = 1
       let adjacent_cells = getAdjacentCells(grid, wall)
-      console.log(adjacent_cells)
       for (let i = 0; i < adjacent_cells.length; i++) {
         if (adjacent_values[i] == 0) {
           walls.push(adjacent_cells[i])
         }
       }
     }
-    const index = walls.indexOf(wall)
-    if (index !== -1) {
-      walls.splice(index, 1)
-    }
+    walls.splice(random)
   }
   console.log("below is maze")
   console.log(grid)
@@ -90,24 +89,20 @@ function generateMaze(size) {
   */
 }
 function getAdjacentCells(grid, current_cell) {
-  const current_x = current_cell.x
-  const current_y = current_cell.y
-
   let adjacent = []
-  adjacent.push([[current_cell.x + 1][current_cell.y]])
 
-  if (current_x + 1 <= size) {
-    adjacent.push([[current_cell.x + 1][current_cell.y]])
+  if (current_cell.x + 1 <= size) {
+    adjacent.push(new Vector(current_cell.x + 1, current_cell.y))
   }
-  if (current_x - 1 >= 0) {
-    adjacent.push([[current_cell.x - 1][current_cell.y]])
+  if (current_cell.x - 1 >= 0) {
+    adjacent.push(new Vector(current_cell.x - 1, current_cell.y))
 
   }
-  if (current_y + 1 <= size) {
-    adjacent.push([[current_cell.x][current_cell.y + 1]])
+  if (current_cell.y + 1 <= size) {
+    adjacent.push(new Vector(current_cell.x, current_cell.y + 1))
   }
-  if (current_y - 1 >= 0) {
-    adjacent.push([[current_cell.x][current_cell.y - 1]])
+  if (current_cell.y - 1 >= 0) {
+    adjacent.push(new Vector(current_cell.x, current_cell.y - 1))
   }
   return adjacent
 }
@@ -115,7 +110,6 @@ function getAdjacentValues(grid, current_cell) {
   //wraps getAdjacentCells
   const cells = getAdjacentCells(grid, current_cell)
   let values = []
-
   cells.forEach(cell => {
     values.push(grid[cell.x | 0][cell.y | 0])
   });
