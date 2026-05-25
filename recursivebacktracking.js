@@ -89,8 +89,24 @@ function getNeighbours(cell) {
 function displayCells() {
     for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
+            const cellSize = 40;
+            const halfSize = cellSize / 2
+
+            const cellPos = new Vector((dimensions.x / size) * (i + 1), (dimensions.y / size) * (j + 1))
+            const centerPos = new Vector(cellPos.x - halfSize, cellPos.y - halfSize)
             ctx.fillStyle = masterOfCells[i][j].visited ? "rgb(255, 0, 0)" : "rgb(49, 105, 118)"
-            ctx.fillRect((dimensions.x / size) * (i + 1), (dimensions.y / size) * (j + 1), 20, 20)
+            ctx.fillRect(centerPos.x, centerPos.y, cellSize, cellSize)
+
+            ctx.fillStyle = "rgb(0 0 0)"
+
+            ctx.fillRect(cellPos.x + halfSize, cellPos.y - halfSize, 5, cellSize)
+            ctx.fillRect(cellPos.x - halfSize, cellPos.y + halfSize, cellSize, 5)
+            ctx.fillRect(cellPos.x - halfSize, cellPos.y - halfSize, 5, cellSize)
+            ctx.fillRect(cellPos.x - halfSize, cellPos.y - halfSize, cellSize, 5)
+
+            ctx.fillStyle = "rgb(0 256 0)"
+            ctx.fillRect(cellPos.x, cellPos.y, 2, 2)
+
         }
     }
 }
