@@ -65,13 +65,13 @@ function generateMaze(size) {
         adjacent_visited_count++
       }
     })
-    if (adjacent_visited_count == 1) {
+    if (adjacent_visited_count <= 2) {
       console.log("WE HSVE WALL")
       grid[wall.x][wall.y] = 1 // passage
       let adjacent_cells = getAdjacentCells(grid, wall)
       for (let i = 0; i < adjacent_cells.length; i++) {
         if (adjacent_visited[i] == 0) {
-          walls.push(adjacent_cells[i])
+          walls.push(getAdjacentCells(grid, adjacent_cells[i]))
           visited[adjacent_cells[i].x][adjacent_cells[i].y]
           console.log("walls.length + 1")
         }
