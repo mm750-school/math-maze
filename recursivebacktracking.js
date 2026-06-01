@@ -70,12 +70,10 @@ async function explore(cell) { //iterative with stack
             chosen.openDirection.push(getDirection(chosen, current))
             chosen.visited = true;
             stack.push(chosen)
-            await sleep(50)
-            displayCells()
+
         }
-
-
     }
+    displayCells()
     console.log(masterOfCells)
 }
 function getNeighbours(cell) {
@@ -110,10 +108,10 @@ function getDirection(first, second) {
     directionY = first.y - second.y
     console.log(directionX)
     console.log(directionY)
-    if (directionX == 1) {
+    if (directionX == -1) {
         return "east"
     }
-    else if (directionX == -1) {
+    else if (directionX == 1) {
         return "west"
     }
     else if (directionY == 1) {
@@ -150,7 +148,6 @@ function displayCells() {
                 ctx.fillRect(cellPos.x - halfSize, cellPos.y - halfSize, 5, cellSize) // left
             }
             if (!cell.openDirection.includes("south")) {
-                //ctx.fillRect(cellPos.x, cellPos.y, 5, 20)
                 ctx.fillRect(cellPos.x - halfSize, cellPos.y + halfSize, cellSize, 5) // down
             }
 
@@ -160,3 +157,5 @@ function displayCells() {
         }
     }
 }
+
+console.log(getDirection(new Vector(10, 10), new Vector(9, 10)))
