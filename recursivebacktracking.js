@@ -13,19 +13,23 @@ class Cell {
         this.y = y | 0
         this.visited = false
         this.openTo = []
+        this.openDirection = []
     }
     toJSON() {
         return { type: "Cell: " + this.visited, x: this.x, y: this.y }
     }
 }
-
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 const dimensions = new Vector(canvas.width, canvas.height)
 const center = new Vector(dimensions.x / 2, dimensions.y / 2);
 
-const size = 10
+const generateButton = document.getElementById("generate")
+
+
+const size = 14
 let masterOfCells = Array.from(Array(size), _ => Array(size).fill(new Cell()));
 
 for (let i = 0; i < size; i++) {
@@ -33,28 +37,46 @@ for (let i = 0; i < size; i++) {
         masterOfCells[i][j] = new Cell(i, j)
     }
 }
-update(masterOfCells[1][1])
-console.log(masterOfCells)
+visitedStack = []
 
+generateButton.onclick = function () {
+    explore(masterOfCells[1][1])
+}
 
-function update(cell) {
+async function explore(cell) { //iterative with stack
     cell.visited = true;
-    neighbours = getNeighbours(cell)
-    var unvisited = []
-    unvisited.push(...neighbours)
-    neighbours.forEach(neighbour => {
-        if (!neighbour.visited) {
-            unvisited.push(neighbour)
-        }
-    });
+    let stack = []
+    stack.push(cell)
 
-    while (unvisited.length != 0) {
-        chosen = unvisited[Math.floor(Math.random() * unvisited.length)]
-        cell.openTo.push(chosen)
-        chosen.openTo.push(cell)
-        unvisited.splice(chosen)
-        update(chosen)
+    while (stack.length) {
+        current = stack.pop()
+
+        neighbours = getNeighbours(current)
+        unvisitedNeighbours = []
+        neighbours.forEach(neighbour => {
+            if (neighbour.visited == false) {
+                unvisitedNeighbours.push(neighbour)
+            }
+        });
+
+        if (unvisitedNeighbours.length) {
+            console.log(unvisitedNeighbours)
+            stack.push(current)
+            chosen = unvisitedNeighbours[Math.floor(Math.random() * unvisitedNeighbours.length)]
+
+            current.openTo.push(chosen)
+            current.openDirection.push(getDirection(current, chosen))
+            chosen.openTo.push(current)
+            chosen.openDirection.push(getDirection(chosen, current))
+            chosen.visited = true;
+            stack.push(chosen)
+            await sleep(50)
+            displayCells()
+        }
+
+
     }
+    console.log(masterOfCells)
 }
 function getNeighbours(cell) {
     x = cell.x
@@ -78,31 +100,59 @@ function getNeighbours(cell) {
     let filtered = []
     neighbours.forEach(element => {
         if (element !== null) {
-            if (!element.visited) {
-                filtered.push(element)
-            }
+            filtered.push(element)
         }
     });
     return filtered
 }
+function getDirection(first, second) {
+    directionX = first.x - second.x
+    directionY = first.y - second.y
+    console.log(directionX)
+    console.log(directionY)
+    if (directionX == 1) {
+        return "east"
+    }
+    else if (directionX == -1) {
+        return "west"
+    }
+    else if (directionY == 1) {
+        return "north"
+    }
+    else if (directionY == -1) {
+        return "south"
+    }
+}
 
 function displayCells() {
+    ctx.reset()
     for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
+            let cell = masterOfCells[i][j]
             const cellSize = 40;
             const halfSize = cellSize / 2
 
-            const cellPos = new Vector((dimensions.x / size) * (i + 1), (dimensions.y / size) * (j + 1))
+            const cellPos = new Vector(cellSize * (i + 1), cellSize * (j + 1))
             const centerPos = new Vector(cellPos.x - halfSize, cellPos.y - halfSize)
-            ctx.fillStyle = masterOfCells[i][j].visited ? "rgb(255, 0, 0)" : "rgb(49, 105, 118)"
+            ctx.fillStyle = cell.visited ? "rgb(255, 0, 0)" : "rgb(49, 105, 118)"
             ctx.fillRect(centerPos.x, centerPos.y, cellSize, cellSize)
+            ctx.font = "bold 30px Arial";
 
             ctx.fillStyle = "rgb(0 0 0)"
-
-            ctx.fillRect(cellPos.x + halfSize, cellPos.y - halfSize, 5, cellSize)
-            ctx.fillRect(cellPos.x - halfSize, cellPos.y + halfSize, cellSize, 5)
-            ctx.fillRect(cellPos.x - halfSize, cellPos.y - halfSize, 5, cellSize)
-            ctx.fillRect(cellPos.x - halfSize, cellPos.y - halfSize, cellSize, 5)
+            if (!cell.openDirection.includes("east"
+            )) {
+                ctx.fillRect(cellPos.x + halfSize, cellPos.y - halfSize, 5, cellSize) //right
+            }
+            if (!cell.openDirection.includes("north")) {
+                ctx.fillRect(cellPos.x - halfSize, cellPos.y - halfSize, cellSize, -5)// up
+            }
+            if (!cell.openDirection.includes("west")) {
+                ctx.fillRect(cellPos.x - halfSize, cellPos.y - halfSize, 5, cellSize) // left
+            }
+            if (!cell.openDirection.includes("south")) {
+                //ctx.fillRect(cellPos.x, cellPos.y, 5, 20)
+                ctx.fillRect(cellPos.x - halfSize, cellPos.y + halfSize, cellSize, 5) // down
+            }
 
             ctx.fillStyle = "rgb(0 256 0)"
             ctx.fillRect(cellPos.x, cellPos.y, 2, 2)
@@ -110,4 +160,3 @@ function displayCells() {
         }
     }
 }
-displayCells()
