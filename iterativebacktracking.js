@@ -12,6 +12,8 @@ class Cell {
         this.x = x | 0
         this.y = y | 0
         this.visited = false
+        this.depth = -1
+        this.isDeepest
         this.openTo = []
         this.openDirection = []
     }
@@ -43,10 +45,13 @@ generateButton.onclick = function () {
     explore(masterOfCells[1][1])
 }
 
-async function explore(cell) { //iterative with stack
-    cell.visited = true;
-    let stack = []
-    stack.push(cell)
+async function explore(startCell) { //iterative with stack
+    startCell.visited = true;
+    startCell.depth = 0;
+
+    let deepestCell = startCell
+    let maxDepth = 0
+    let stack = [startCell]
 
     while (stack.length) {
         current = stack.pop()
@@ -60,20 +65,29 @@ async function explore(cell) { //iterative with stack
         });
 
         if (unvisitedNeighbours.length) {
-            console.log(unvisitedNeighbours)
             stack.push(current)
             chosen = unvisitedNeighbours[Math.floor(Math.random() * unvisitedNeighbours.length)]
 
+            chosen.visited = true;
+            chosen.depth = current.depth + 1;
+
+            if (chosen.depth > maxDepth) {
+                maxDepth = chosen.depth;
+                deepestCell = chosen;
+            }
             current.openTo.push(chosen)
             current.openDirection.push(getDirection(current, chosen))
             chosen.openTo.push(current)
             chosen.openDirection.push(getDirection(chosen, current))
-            chosen.visited = true;
             stack.push(chosen)
 
+            await sleep(20)
+            displayCells()
         }
     }
+    deepestCell.isDeepest = true;
     displayCells()
+
     console.log(masterOfCells)
 }
 function getNeighbours(cell) {
@@ -149,6 +163,14 @@ function displayCells() {
             }
             if (!cell.openDirection.includes("south")) {
                 ctx.fillRect(cellPos.x - halfSize, cellPos.y + halfSize, cellSize, 5) // down
+            }
+
+            ctx.font = "bold 30px Arial"
+            if (cell.isDeepest) {
+
+                ctx.fillText("F", cellPos.x, cellPos.y)
+            } else if (cell.depth == 0) {
+                ctx.fillText("S", cellPos.x, cellPos.y)
             }
 
             ctx.fillStyle = "rgb(0 256 0)"
