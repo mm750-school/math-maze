@@ -21,6 +21,23 @@ class Cell {
         return { type: "Cell: " + this.visited, x: this.x, y: this.y }
     }
 }
+
+const character = {
+    x: 50,
+    y: 50,
+    width: 20,
+    height: 20,
+    speed: 1,
+    color: '#00ffcc'
+};
+
+const keys = {
+    w: false,
+    a: false,
+    s: false,
+    d: false
+}
+
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -42,7 +59,17 @@ for (let i = 0; i < size; i++) {
 visitedStack = []
 
 generateButton.onclick = function () {
+    window.addEventListener('keydown', (e) => {
+        if (e.key in keys) keys[e.key] = true;
+        console.log(e.key)
+    });
+
+    window.addEventListener('keyup', (e) => {
+        if (e.key in keys) keys[e.key] = false;
+    });
+
     explore(masterOfCells[1][1])
+    gameLoop()
 }
 
 async function explore(startCell) { //iterative with stack
@@ -81,7 +108,6 @@ async function explore(startCell) { //iterative with stack
             chosen.openDirection.push(getDirection(chosen, current))
             stack.push(chosen)
 
-            await sleep(20)
             displayCells()
         }
     }
@@ -180,4 +206,29 @@ function displayCells() {
     }
 }
 
-console.log(getDirection(new Vector(10, 10), new Vector(9, 10)))
+function updateCharacter() {
+
+    if (keys.w) character.y -= character.speed;
+    if (keys.s) character.y += character.speed;
+    if (keys.a) character.x -= character.speed;
+    if (keys.d) character.x += character.speed;
+    console.log(character.x, character.y)
+}
+
+
+function render() {
+    ctx.reset()
+
+    displayCells()
+
+    ctx.fillStyle = character.color
+    ctx.fillRect(character.x, character.y, character.width, character.height)
+}
+
+function gameLoop() {
+    updateCharacter()
+    render()
+
+    requestAnimationFrame(gameLoop)
+}
+
