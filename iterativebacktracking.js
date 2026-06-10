@@ -23,10 +23,9 @@ class Cell {
 }
 
 const character = {
-    x: 50,
-    y: 50,
-    width: 20,
-    height: 20,
+    x: 80,
+    y: 80,
+    size: 10,
     speed: 1,
     color: '#00ffcc'
 };
@@ -58,19 +57,19 @@ for (let i = 0; i < size; i++) {
 }
 visitedStack = []
 
-generateButton.onclick = function () {
-    window.addEventListener('keydown', (e) => {
-        if (e.key in keys) keys[e.key] = true;
-        console.log(e.key)
-    });
 
-    window.addEventListener('keyup', (e) => {
-        if (e.key in keys) keys[e.key] = false;
-    });
+window.addEventListener('keydown', (e) => {
+    if (e.key in keys) keys[e.key] = true;
+    console.log(e.key)
+});
 
-    explore(masterOfCells[1][1])
-    gameLoop()
-}
+window.addEventListener('keyup', (e) => {
+    if (e.key in keys) keys[e.key] = false;
+});
+
+explore(masterOfCells[1][1])
+gameLoop()
+
 
 async function explore(startCell) { //iterative with stack
     startCell.visited = true;
@@ -172,7 +171,7 @@ function displayCells() {
 
             const cellPos = new Vector(cellSize * (i + 1), cellSize * (j + 1))
             const centerPos = new Vector(cellPos.x - halfSize, cellPos.y - halfSize)
-            ctx.fillStyle = cell.visited ? "rgb(255, 0, 0)" : "rgb(49, 105, 118)"
+            ctx.fillStyle = "rgb(146, 90, 70)"
             ctx.fillRect(centerPos.x, centerPos.y, cellSize, cellSize)
             ctx.font = "bold 30px Arial";
 
@@ -190,18 +189,14 @@ function displayCells() {
             if (!cell.openDirection.includes("south")) {
                 ctx.fillRect(cellPos.x - halfSize, cellPos.y + halfSize, cellSize, 5) // down
             }
+            ctx.fillStyle = "rgb(146, 90, 70)"
 
-            ctx.font = "bold 30px Arial"
             if (cell.isDeepest) {
-
-                ctx.fillText("F", cellPos.x, cellPos.y)
+                ctx.fillStyle = "rgb(49, 105, 118)"
+                ctx.fillRect(centerPos.x, centerPos.y, cellSize, cellSize)
             } else if (cell.depth == 0) {
-                ctx.fillText("S", cellPos.x, cellPos.y)
+                ctx.fillRect(centerPos.x, centerPos.y, cellSize, cellSize)
             }
-
-            ctx.fillStyle = "rgb(0 256 0)"
-            ctx.fillRect(cellPos.x, cellPos.y, 2, 2)
-
         }
     }
 }
@@ -221,8 +216,13 @@ function render() {
 
     displayCells()
 
-    ctx.fillStyle = character.color
-    ctx.fillRect(character.x, character.y, character.width, character.height)
+    ctx.beginPath();
+    ctx.arc(character.x, character.y, character.size, 0, 2 * Math.PI);
+    ctx.fillStyle = character.color;
+    ctx.fill();
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = character.color;
+    ctx.stroke();
 }
 
 function gameLoop() {
