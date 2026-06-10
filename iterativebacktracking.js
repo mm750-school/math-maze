@@ -26,7 +26,7 @@ const character = {
     x: 80,
     y: 80,
     size: 10,
-    speed: 1,
+    speed: 2,
     color: '#00ffcc'
 };
 
@@ -181,13 +181,13 @@ function displayCells() {
                 ctx.fillRect(cellPos.x + halfSize, cellPos.y - halfSize, 5, cellSize) //right
             }
             if (!cell.openDirection.includes("north")) {
-                ctx.fillRect(cellPos.x - halfSize, cellPos.y - halfSize, cellSize, -5)// up
+                ctx.fillRect(cellPos.x - halfSize, cellPos.y - halfSize, cellSize + 5, 5)// up
             }
             if (!cell.openDirection.includes("west")) {
                 ctx.fillRect(cellPos.x - halfSize, cellPos.y - halfSize, 5, cellSize) // left
             }
             if (!cell.openDirection.includes("south")) {
-                ctx.fillRect(cellPos.x - halfSize, cellPos.y + halfSize, cellSize, 5) // down
+                ctx.fillRect(cellPos.x - halfSize, cellPos.y + halfSize, cellSize + 5, 5) // down
             }
             ctx.fillStyle = "rgb(146, 90, 70)"
 
