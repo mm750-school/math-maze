@@ -68,6 +68,7 @@ window.addEventListener('keyup', (e) => {
 });
 
 explore(masterOfCells[1][1])
+const walls = calculateWalls()
 gameLoop()
 
 
@@ -176,19 +177,9 @@ function displayCells() {
             ctx.font = "bold 30px Arial";
 
             ctx.fillStyle = "rgb(0 0 0)"
-            if (!cell.openDirection.includes("east"
-            )) {
-                ctx.fillRect(cellPos.x + halfSize, cellPos.y - halfSize, 5, cellSize) //right
-            }
-            if (!cell.openDirection.includes("north")) {
-                ctx.fillRect(cellPos.x - halfSize, cellPos.y - halfSize, cellSize + 5, 5)// up
-            }
-            if (!cell.openDirection.includes("west")) {
-                ctx.fillRect(cellPos.x - halfSize, cellPos.y - halfSize, 5, cellSize) // left
-            }
-            if (!cell.openDirection.includes("south")) {
-                ctx.fillRect(cellPos.x - halfSize, cellPos.y + halfSize, cellSize + 5, 5) // down
-            }
+            walls.forEach(wall => { // not working? WHy?
+                ctx.fillRect(wall[0], wall[1], wall[2], wall[3])
+            });
             ctx.fillStyle = "rgb(146, 90, 70)"
 
             if (cell.isDeepest) {
@@ -196,6 +187,33 @@ function displayCells() {
                 ctx.fillRect(centerPos.x, centerPos.y, cellSize, cellSize)
             } else if (cell.depth == 0) {
                 ctx.fillRect(centerPos.x, centerPos.y, cellSize, cellSize)
+            }
+        }
+    }
+}
+function calculateWalls() {
+    let walls = []
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+            let cell = masterOfCells[i][j]
+            const cellSize = 40;
+            const halfSize = cellSize / 2
+
+            const cellPos = new Vector(cellSize * (i + 1), cellSize * (j + 1))
+            const centerPos = new Vector(cellPos.x - halfSize, cellPos.y - halfSize)
+
+            if (!cell.openDirection.includes("east"
+            )) {
+                walls.push([cellPos.x + halfSize, cellPos.y - halfSize, 5, cellSize]) //right
+            }
+            if (!cell.openDirection.includes("north")) {
+                walls.push([cellPos.x - halfSize, cellPos.y - halfSize, cellSize + 5, 5])// up
+            }
+            if (!cell.openDirection.includes("west")) {
+                walls.push([cellPos.x - halfSize, cellPos.y - halfSize, 5, cellSize]) // left
+            }
+            if (!cell.openDirection.includes("south")) {
+                walls.push([cellPos.x - halfSize, cellPos.y + halfSize, cellSize + 5, 5]) // down
             }
         }
     }
