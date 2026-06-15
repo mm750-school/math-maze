@@ -16,6 +16,7 @@ class Cell {
         this.isDeepest
         this.openTo = []
         this.openDirection = []
+        this.visible = false
     }
     toJSON() {
         return { type: "Cell: " + this.visited, x: this.x, y: this.y }
@@ -42,7 +43,6 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 const dimensions = new Vector(canvas.width, canvas.height)
-const center = new Vector(dimensions.x / 2, dimensions.y / 2);
 
 const generateButton = document.getElementById("generate")
 
@@ -60,7 +60,6 @@ visitedStack = []
 
 window.addEventListener('keydown', (e) => {
     if (e.key in keys) keys[e.key] = true;
-    console.log(e.key)
 });
 
 window.addEventListener('keyup', (e) => {
@@ -144,8 +143,6 @@ function getNeighbours(cell) {
 function getDirection(first, second) {
     directionX = first.x - second.x
     directionY = first.y - second.y
-    console.log(directionX)
-    console.log(directionY)
     if (directionX == -1) {
         return "east"
     }
@@ -162,6 +159,7 @@ function getDirection(first, second) {
 
 function displayCells() {
     ctx.reset()
+
     for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
             let cell = masterOfCells[i][j]
@@ -169,25 +167,24 @@ function displayCells() {
             const halfSize = cellSize / 2
 
             const cellPos = new Vector(cellSize * (i + 1), cellSize * (j + 1))
-            const centerPos = new Vector(cellPos.x - halfSize, cellPos.y - halfSize)
-            ctx.fillStyle = "rgb(146, 90, 70)"
-            ctx.fillRect(centerPos.x, centerPos.y, cellSize, cellSize)
+            ctx.fillStyle = cell.visible ? "rgb(0, 212, 250)" : "rgb(146, 90, 70)"
+            ctx.fillRect(cellPos.x, cellPos.y, cellSize, cellSize)
             ctx.font = "bold 30px Arial";
 
-            ctx.fillStyle = "rgb(0 0 0)"
-            walls.forEach(wall => { // not working? WHy?
-                ctx.fillRect(wall[0], wall[1], wall[2], wall[3])
-            });
-            ctx.fillStyle = "rgb(146, 90, 70)"
 
             if (cell.isDeepest) {
                 ctx.fillStyle = "rgb(49, 105, 118)"
-                ctx.fillRect(centerPos.x, centerPos.y, cellSize, cellSize)
+                ctx.fillRect(cellPos.x, cellPos.y, cellSize, cellSize)
             } else if (cell.depth == 0) {
-                ctx.fillRect(centerPos.x, centerPos.y, cellSize, cellSize)
+                ctx.fillStyle = "rgb(146, 90, 70)"
+                ctx.fillRect(cellPos.x, cellPos.y, cellSize, cellSize)
             }
         }
     }
+    ctx.fillStyle = "rgb(0 0 0)"
+    walls.forEach(wall => {
+        ctx.fillRect(wall[0], wall[1], wall[2], wall[3])
+    });
 }
 function calculateWalls() {
     let walls = []
@@ -198,7 +195,6 @@ function calculateWalls() {
             const halfSize = cellSize / 2
 
             const cellPos = new Vector(cellSize * (i + 1), cellSize * (j + 1))
-            const centerPos = new Vector(cellPos.x - halfSize, cellPos.y - halfSize)
 
             if (!cell.openDirection.includes("east"
             )) {
@@ -217,6 +213,18 @@ function calculateWalls() {
     }
     return walls
 }
+function updateFog() {
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+            masterOfCells[i][j].visible = false
+        }
+    }
+    let x = Math.round(character.x / 40)
+    let y = Math.round(character.y / 40)
+    console.log(x, y)
+
+    masterOfCells[x][y].visible = true;
+}
 
 function updateCharacter() {
 
@@ -224,7 +232,7 @@ function updateCharacter() {
     if (keys.s) character.y += character.speed;
     if (keys.a) character.x -= character.speed;
     if (keys.d) character.x += character.speed;
-    console.log(character.x, character.y)
+    console.log("position:" + character.x, character.y)
 }
 
 
@@ -242,6 +250,7 @@ function render() {
 
 function gameLoop() {
     updateCharacter()
+    updateFog()
     render()
 
     requestAnimationFrame(gameLoop)
