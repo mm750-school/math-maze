@@ -228,8 +228,8 @@ function updateFog() {
             masterOfCells[i][j].visible = false
         }
     }
-    let x = Math.round(character.x / 40)
-    let y = Math.round(character.y / 40)
+    let x = Math.round(character.x / 40) - 1
+    let y = Math.round(character.y / 40) - 1
     console.log(x, y)
 
     masterOfCells[x][y].visible = true;
