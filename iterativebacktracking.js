@@ -47,7 +47,7 @@ const dimensions = new Vector(canvas.width, canvas.height)
 const generateButton = document.getElementById("generate")
 
 
-const size = 14
+const size = 15
 let masterOfCells = Array.from(Array(size), _ => Array(size).fill(new Cell()));
 
 for (let i = 0; i < size; i++) {
@@ -166,7 +166,7 @@ function displayCells() {
             const cellSize = 40;
             const halfSize = cellSize / 2
 
-            const cellPos = new Vector(cellSize * (i + 1), cellSize * (j + 1))
+            const cellPos = new Vector(cellSize * i, cellSize * j)
             ctx.fillStyle = cell.visible ? "rgb(0, 212, 250)" : "rgb(146, 90, 70)"
             ctx.fillRect(cellPos.x, cellPos.y, cellSize, cellSize)
             ctx.font = "bold 30px Arial";
@@ -192,22 +192,31 @@ function calculateWalls() {
         for (let j = 0; j < size; j++) {
             let cell = masterOfCells[i][j]
             const cellSize = 40;
-            const halfSize = cellSize / 2
 
-            const cellPos = new Vector(cellSize * (i + 1), cellSize * (j + 1))
+            const cellPos = new Vector(cellSize * i, cellSize * j)
 
-            if (!cell.openDirection.includes("east"
-            )) {
-                walls.push([cellPos.x + halfSize, cellPos.y - halfSize, 5, cellSize]) //right
+
+            const x = cellPos.x;
+            const y = cellPos.y;
+
+            // right wall
+            if (!cell.openDirection.includes("east")) {
+                walls.push([x + cellSize, y, 5, cellSize]);
             }
+
+            // top wall
             if (!cell.openDirection.includes("north")) {
-                walls.push([cellPos.x - halfSize, cellPos.y - halfSize, cellSize + 5, 5])// up
+                walls.push([x, y, cellSize, 5]);
             }
+
+            // left wall
             if (!cell.openDirection.includes("west")) {
-                walls.push([cellPos.x - halfSize, cellPos.y - halfSize, 5, cellSize]) // left
+                walls.push([x, y, 5, cellSize]);
             }
+
+            // bottom wall
             if (!cell.openDirection.includes("south")) {
-                walls.push([cellPos.x - halfSize, cellPos.y + halfSize, cellSize + 5, 5]) // down
+                walls.push([x, y + cellSize, cellSize, 5]);
             }
         }
     }
