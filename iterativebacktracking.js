@@ -108,11 +108,9 @@ async function explore(startCell) { //iterative with stack
             chosen.openDirection.push(getDirection(chosen, current))
             stack.push(chosen)
 
-            displayCells()
         }
     }
     deepestCell.isDeepest = true;
-    displayCells()
 
     console.log(masterOfCells)
 }
@@ -217,6 +215,7 @@ function calculateWalls() {
             }
         }
     }
+    return walls
 }
 
 function updateCharacter() {
@@ -230,8 +229,6 @@ function updateCharacter() {
 
 
 function render() {
-    ctx.reset()
-
     displayCells()
 
     ctx.beginPath();
