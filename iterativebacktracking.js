@@ -22,6 +22,14 @@ class Cell {
         return { type: "Cell: " + this.visited, x: this.x, y: this.y }
     }
 }
+class rect {
+    constructor(x, y, width, height) {
+        this.x = x
+        this.y = y
+        this.width = width
+        this.height = height
+    }
+}
 
 const character = {
     x: 80,
@@ -167,7 +175,7 @@ function displayCells() {
             const halfSize = cellSize / 2
 
             const cellPos = new Vector(cellSize * i, cellSize * j)
-            ctx.fillStyle = cell.visible ? "rgb(0, 212, 250)" : "rgb(146, 90, 70)"
+            ctx.fillStyle = cell.visible ? "rgb(146, 90, 70)" : "rgb(49, 49, 49)"
             ctx.fillRect(cellPos.x, cellPos.y, cellSize, cellSize)
             ctx.font = "bold 30px Arial";
 
@@ -183,7 +191,7 @@ function displayCells() {
     }
     ctx.fillStyle = "rgb(0 0 0)"
     walls.forEach(wall => {
-        ctx.fillRect(wall[0], wall[1], wall[2], wall[3])
+        ctx.fillRect(wall.x, wall.y, wall.width, wall.height)
     });
 }
 function calculateWalls() {
@@ -201,47 +209,66 @@ function calculateWalls() {
 
             // right wall
             if (!cell.openDirection.includes("east")) {
-                walls.push([x + cellSize, y, 5, cellSize]);
+                walls.push(new rect(x + cellSize, y, 5, cellSize));
             }
 
             // top wall
             if (!cell.openDirection.includes("north")) {
-                walls.push([x, y, cellSize, 5]);
+                walls.push(new rect(x, y, cellSize, 5));
             }
 
             // left wall
             if (!cell.openDirection.includes("west")) {
-                walls.push([x, y, 5, cellSize]);
+                walls.push(new rect(x, y, 5, cellSize));
             }
 
             // bottom wall
             if (!cell.openDirection.includes("south")) {
-                walls.push([x, y + cellSize, cellSize, 5]);
+                walls.push(new rect(x, y + cellSize, cellSize, 5));
             }
         }
     }
     return walls
 }
 function updateFog() {
-    for (let i = 0; i < size; i++) {
-        for (let j = 0; j < size; j++) {
-            masterOfCells[i][j].visible = false
-        }
-    }
-    let x = Math.round(character.x / 40) - 1
-    let y = Math.round(character.y / 40) - 1
-    console.log(x, y)
+    let x = Math.floor(character.x / 40)
+    let y = Math.floor(character.y / 40)
+    ctx.fillStyle = "rgb(255, 255, 255)"
+    ctx.fillRect(x * 40, y * 40, 5, 5)
 
     masterOfCells[x][y].visible = true;
 }
 
 function updateCharacter() {
+    let colliding = false;
+    let collidingWall = []
+    walls.forEach(wall => {
+        let distanceX = wall.x - character.x
+        let distanceY = wall.y - character.y
+        if (distanceX <= 100 && distanceY <= 100) {
+            if (checkRectCircleCollision(wall, character)) {
+                colliding = true
+                collidingWall.push(new Vector(Math.normalise(wall.x - character.x),
+                    Math.normalise(wall.y - character.y)))
+            }
+        }
+    })
+    if (colliding) {
+        character.color = '#fff700'
+    }
+    else {
+        character.color = '#00ffcc'
+    }
+    collidingWall.forEach(wall => {
+        if (wall.x > 0) {
 
+        }
+    })
     if (keys.w) character.y -= character.speed;
     if (keys.s) character.y += character.speed;
     if (keys.a) character.x -= character.speed;
     if (keys.d) character.x += character.speed;
-    console.log("position:" + character.x, character.y)
+    //console.log("position:" + character.x, character.y)
 }
 
 
@@ -256,11 +283,23 @@ function render() {
     ctx.strokeStyle = character.color;
     ctx.stroke();
 }
+function checkRectCircleCollision(rect, circle) {
+    const closestX = Math.max(rect.x, Math.min(circle.x, rect.x + rect.width));
+    const closestY = Math.max(rect.y, Math.min(circle.y, rect.y + rect.height));
+
+    const distanceX = circle.x - closestX;
+    const distanceY = circle.y - closestY;
+
+    const distanceSquared = (distanceX * distanceX) + (distanceY * distanceY);
+
+    return distanceSquared <= (circle.size * circle.size);
+}
 
 function gameLoop() {
     updateCharacter()
-    updateFog()
+
     render()
+    updateFog()
 
     requestAnimationFrame(gameLoop)
 }
