@@ -32,8 +32,8 @@ class rect {
 }
 
 const character = {
-    x: 20,
-    y: 20,
+    x: 60,
+    y: 60,
     size: 10,
     speed: 2,
     color: '#00ffcc'
@@ -176,7 +176,7 @@ function displayCells() {
             const halfSize = cellSize / 2
 
             const cellPos = new Vector(cellSize * i, cellSize * j)
-            ctx.fillStyle = cell.visible ? "rgb(146, 90, 70)" : "rgb(49, 49, 49)"
+            ctx.fillStyle = cell.visible ? "rgb(146, 90, 70)" : "rgb(0, 0, 0)"
             ctx.fillRect(cellPos.x, cellPos.y, cellSize, cellSize)
             ctx.font = "bold 30px Arial";
 
@@ -238,6 +238,9 @@ function updateFog() {
     ctx.fillRect(x * 40, y * 40, 5, 5)
 
     if (masterOfCells[x][y]) {
+        masterOfCells[x][y].openTo.forEach(open => {
+            masterOfCells[open.x][open.y].visible = true;
+        })
         masterOfCells[x][y].visible = true;
     }
 
