@@ -32,8 +32,8 @@ class rect {
 }
 
 const character = {
-    x: 80,
-    y: 80,
+    x: 20,
+    y: 20,
     size: 10,
     speed: 2,
     color: '#00ffcc'
@@ -73,6 +73,7 @@ window.addEventListener('keydown', (e) => {
 window.addEventListener('keyup', (e) => {
     if (e.key in keys) keys[e.key] = false;
 });
+
 
 explore(masterOfCells[1][1])
 const walls = calculateWalls()
@@ -236,7 +237,10 @@ function updateFog() {
     ctx.fillStyle = "rgb(255, 255, 255)"
     ctx.fillRect(x * 40, y * 40, 5, 5)
 
-    masterOfCells[x][y].visible = true;
+    if (masterOfCells[x][y]) {
+        masterOfCells[x][y].visible = true;
+    }
+
 }
 
 function updateCharacter() {
@@ -248,8 +252,7 @@ function updateCharacter() {
         if (distanceX <= 100 && distanceY <= 100) {
             if (checkRectCircleCollision(wall, character)) {
                 colliding = true
-                collidingWall.push(new Vector(Math.normalise(wall.x - character.x),
-                    Math.normalise(wall.y - character.y)))
+                collidingWall.push(new Vector(wall.x - character.x, wall.y - character.y))
             }
         }
     })
@@ -259,15 +262,32 @@ function updateCharacter() {
     else {
         character.color = '#00ffcc'
     }
+    directions_blocked = []
     collidingWall.forEach(wall => {
+        if (wall.y > 0) {
+            directions_blocked.push("south")
+            console.log(wall.y, 0, "south")
+
+        } else if (wall.y < 0) {
+            directions_blocked.push("north")
+            console.log(wall.y, 0, "north")
+
+        }
         if (wall.x > 0) {
+            directions_blocked.push("east")
+            console.log(wall.x, 0, "east")
+
+        } else if (wall.x < 0) {
+            directions_blocked.push("west")
+            console.log(wall.x, 0, "west")
 
         }
     })
-    if (keys.w) character.y -= character.speed;
-    if (keys.s) character.y += character.speed;
-    if (keys.a) character.x -= character.speed;
-    if (keys.d) character.x += character.speed;
+    console.log(directions_blocked)
+    if (keys.w && !directions_blocked.includes("north")) character.y -= character.speed;
+    if (keys.s && !directions_blocked.includes("south")) character.y += character.speed;
+    if (keys.a && !directions_blocked.includes("west")) character.x -= character.speed;
+    if (keys.d && !directions_blocked.includes("east")) character.x += character.speed;
     //console.log("position:" + character.x, character.y)
 }
 
