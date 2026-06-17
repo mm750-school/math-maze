@@ -122,9 +122,29 @@ async function explore(startCell) { //iterative with stack
     }
     deepestCell.isDeepest = true;
     finishedCell = deepestCell
+    braid()
 
     console.log(masterOfCells)
 }
+
+function braid() {
+
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+            if (masterOfCells[i][j].openTo.length == 1) {
+                let current = masterOfCells[i][j]
+                let neighbours = getNeighbours(current)
+                let chosen = neighbours[Math.floor(Math.random() * neighbours.length)]
+
+                current.openTo.push(chosen)
+                current.openDirection.push(getDirection(current, chosen))
+                chosen.openTo.push(current)
+                chosen.openDirection.push(getDirection(chosen, current))
+            }
+        }
+    }
+}
+
 function getNeighbours(cell) {
     x = cell.x
     y = cell.y
