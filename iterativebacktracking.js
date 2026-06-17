@@ -34,7 +34,7 @@ class rect {
 const character = {
     x: 60,
     y: 60,
-    size: 10,
+    size: 5,
     speed: 2,
     color: '#00ffcc'
 };
@@ -54,6 +54,8 @@ const dimensions = new Vector(canvas.width, canvas.height)
 
 const generateButton = document.getElementById("generate")
 
+let finished = false;
+let finishedCell
 
 const size = 15
 let masterOfCells = Array.from(Array(size), _ => Array(size).fill(new Cell()));
@@ -119,6 +121,7 @@ async function explore(startCell) { //iterative with stack
         }
     }
     deepestCell.isDeepest = true;
+    finishedCell = deepestCell
 
     console.log(masterOfCells)
 }
@@ -292,6 +295,12 @@ function updateCharacter() {
     if (keys.a && !directions_blocked.includes("west")) character.x -= character.speed;
     if (keys.d && !directions_blocked.includes("east")) character.x += character.speed;
     //console.log("position:" + character.x, character.y)
+
+    let x = Math.floor(character.x / 40)
+    let y = Math.floor(character.y / 40)
+    if (x == finishedCell.x && y == finishedCell.y) {
+        finished = true
+    }
 }
 
 
@@ -305,6 +314,12 @@ function render() {
     ctx.lineWidth = 4;
     ctx.strokeStyle = character.color;
     ctx.stroke();
+    if (finished) {
+        ctx.fillStyle = "rgb(256, 256, 256)"
+        ctx.font = "120px Arial";
+        ctx.fillText("FINISHED!", 10, dimensions.y / 2, dimensions.x)
+    }
+
 }
 function checkRectCircleCollision(rect, circle) {
     const closestX = Math.max(rect.x, Math.min(circle.x, rect.x + rect.width));
