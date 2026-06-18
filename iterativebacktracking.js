@@ -79,7 +79,11 @@ window.addEventListener('keydown', (e) => {
 window.addEventListener('keyup', (e) => {
     if (e.key in keys) keys[e.key] = false;
 });
-
+window.addEventListener('keyup', (e) => {
+    if (e.key === "Enter" && finished) {
+        window.location.reload()
+    }
+})
 
 explore(masterOfCells[1][1])
 const walls = calculateWalls()
