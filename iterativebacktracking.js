@@ -258,7 +258,7 @@ function calculateWalls() {
     }
     return walls
 }
-function updateFog() {
+function updateFog(visibility) {
     let x = Math.floor(character.x / 40)
     let y = Math.floor(character.y / 40)
     ctx.fillStyle = "rgb(255, 255, 255)"
@@ -267,6 +267,11 @@ function updateFog() {
     if (masterOfCells[x][y]) {
         masterOfCells[x][y].openTo.forEach(open => {
             masterOfCells[open.x][open.y].visible = true;
+            if (visibility == 2) {
+                masterOfCells[open.x][open.y].openTo.forEach(second => {
+                    masterOfCells[second.x][second.y].visible = true;
+                })
+            }
         })
         masterOfCells[x][y].visible = true;
     }
@@ -365,7 +370,7 @@ function gameLoop() {
     updateCharacter()
 
     render()
-    updateFog()
+    updateFog(2)
 
     requestAnimationFrame(gameLoop)
 }
