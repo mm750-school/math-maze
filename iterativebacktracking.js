@@ -208,6 +208,7 @@ function displayCells() {
 
             const cellPos = new Vector(cellSize * i, cellSize * j)
             ctx.fillStyle = cell.visible ? "rgb(146, 90, 70)" : "rgb(0, 0, 0)"
+            //ctx.fillStyle = "rgb(146, 90, 70)" //for debug
             ctx.fillRect(cellPos.x, cellPos.y, cellSize, cellSize)
             ctx.font = "bold 30px Arial";
 
@@ -367,7 +368,7 @@ function checkRectCircleCollision(rect, circle) {
 
     const distanceSquared = (distanceX * distanceX) + (distanceY * distanceY);
 
-    return distanceSquared <= (circle.size * circle.size);
+    return distanceSquared <= (circle.size + 10 * circle.size + 10);
 }
 
 function gameLoop() {
