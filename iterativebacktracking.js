@@ -36,7 +36,7 @@ const character = {
     y: 60,
     size: 5,
     speed: 2,
-    color: '#00ffcc'
+    color: '#000000'
 };
 
 const keys = {
@@ -214,15 +214,12 @@ function displayCells() {
 
 
             if (cell.isDeepest) {
-                ctx.fillStyle = "rgb(49, 105, 118)"
-                ctx.fillRect(cellPos.x, cellPos.y, cellSize, cellSize)
-            } else if (cell.depth == 0) {
-                ctx.fillStyle = "rgb(146, 90, 70)"
+                ctx.fillStyle = "rgb(129, 255, 129)"
                 ctx.fillRect(cellPos.x, cellPos.y, cellSize, cellSize)
             }
         }
     }
-    ctx.fillStyle = "rgb(0 0 0)"
+    ctx.fillStyle = "rgb(0, 0, 0)"
     walls.forEach(wall => {
         ctx.fillRect(wall.x, wall.y, wall.width, wall.height)
     });
@@ -264,23 +261,31 @@ function calculateWalls() {
     return walls
 }
 function updateFog(visibility) {
-    let x = Math.floor(character.x / 40)
-    let y = Math.floor(character.y / 40)
-    ctx.fillStyle = "rgb(255, 255, 255)"
-    ctx.fillRect(x * 40, y * 40, 5, 5)
-
+    current = currentCell()
+    let x = current.x
+    let y = current.y
     if (masterOfCells[x][y]) {
         masterOfCells[x][y].openTo.forEach(open => {
             masterOfCells[open.x][open.y].visible = true;
             if (visibility == 2) {
                 masterOfCells[open.x][open.y].openTo.forEach(second => {
                     masterOfCells[second.x][second.y].visible = true;
+
                 })
             }
         })
         masterOfCells[x][y].visible = true;
+
     }
 
+}
+
+function currentCell() {
+    let x = Math.floor(character.x / 40)
+    let y = Math.floor(character.y / 40)
+    ctx.fillStyle = "rgb(255, 255, 255)"
+    ctx.fillRect(x * 40, y * 40, 5, 5)
+    return masterOfCells[x][y]
 }
 
 function updateCharacter() {
@@ -296,12 +301,6 @@ function updateCharacter() {
             }
         }
     })
-    if (colliding) {
-        character.color = '#fff700'
-    }
-    else {
-        character.color = '#00ffcc'
-    }
     directions_blocked = []
     collidingWall.forEach(wall => {
         if (wall.y - character.y > 0) {
@@ -334,9 +333,8 @@ function updateCharacter() {
     if (keys.d && !collision_east || keys.ArrowRight && !collision_east) character.x += character.speed;
     //console.log("position:" + character.x, character.y)
 
-    let x = Math.floor(character.x / 40)
-    let y = Math.floor(character.y / 40)
-    if (x == finishedCell.x && y == finishedCell.y) {
+    let current = currentCell()
+    if (current.x == finishedCell.x && current.y == finishedCell.y) {
         finished = true
     }
 }
