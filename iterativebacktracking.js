@@ -139,8 +139,19 @@ function braid() {
 
     for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
-            if (masterOfCells[i][j].openTo.length == 1) {
-                let current = masterOfCells[i][j]
+            let current = masterOfCells[i][j]
+
+            if (current.isDeepest) return
+            if (current.openTo.length == 1) {
+                let neighbours = getNeighbours(current)
+                let chosen = neighbours[Math.floor(Math.random() * neighbours.length)]
+
+                current.openTo.push(chosen)
+                current.openDirection.push(getDirection(current, chosen))
+                chosen.openTo.push(current)
+                chosen.openDirection.push(getDirection(chosen, current))
+            }
+            if (Math.random() < 0.2) {
                 let neighbours = getNeighbours(current)
                 let chosen = neighbours[Math.floor(Math.random() * neighbours.length)]
 
