@@ -84,8 +84,10 @@ window.addEventListener('keyup', (e) => {
         window.location.reload()
     }
 })
-
-explore(masterOfCells[1][1])
+let start = new Vector(Math.floor(Math.random() * size), Math.floor(Math.random() * size))
+character.x = start.x * 40 + 20
+character.y = start.y * 40 + 20
+explore(masterOfCells[start.x][start.y])
 const walls = calculateWalls()
 gameLoop()
 
