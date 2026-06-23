@@ -61,7 +61,12 @@ const generateButton = document.getElementById("generate")
 let finished = false;
 let finishedCell
 
-const size = 15
+const size = 14
+
+const cellSize = (dimensions.x - 5) / size;
+const halfSize = cellSize / 2
+
+
 let masterOfCells = Array.from(Array(size), _ => Array(size).fill(new Cell()));
 
 for (let i = 0; i < size; i++) {
@@ -85,8 +90,9 @@ window.addEventListener('keyup', (e) => {
     }
 })
 let start = new Vector(Math.floor(Math.random() * size), Math.floor(Math.random() * size))
-character.x = start.x * 40 + 20
-character.y = start.y * 40 + 20
+character.x = start.x * cellSize + halfSize
+character.y = start.y * cellSize + halfSize
+character.size = cellSize / 8
 explore(masterOfCells[start.x][start.y])
 const walls = calculateWalls()
 gameLoop()
@@ -211,12 +217,10 @@ function getDirection(first, second) {
 function displayCells() {
     ctx.reset()
 
+
     for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
             let cell = masterOfCells[i][j]
-            const cellSize = 40;
-            const halfSize = cellSize / 2
-
             const cellPos = new Vector(cellSize * i, cellSize * j)
             ctx.fillStyle = cell.visible ? "rgb(146, 90, 70)" : "rgb(0, 0, 0)"
             //ctx.fillStyle = "rgb(146, 90, 70)" //for debug
@@ -240,7 +244,6 @@ function calculateWalls() {
     for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
             let cell = masterOfCells[i][j]
-            const cellSize = 40;
 
             const cellPos = new Vector(cellSize * i, cellSize * j)
 
@@ -292,8 +295,8 @@ function updateFog(visibility) {
 }
 
 function currentCell() {
-    let x = Math.floor(character.x / 40)
-    let y = Math.floor(character.y / 40)
+    let x = Math.floor(character.x / cellSize)
+    let y = Math.floor(character.y / cellSize)
     // ctx.fillStyle = "rgb(255, 255, 255)"
     // ctx.fillRect(x * 40, y * 40, 5, 5)
     return masterOfCells[x][y]
