@@ -148,7 +148,7 @@ function braid() {
         for (let j = 0; j < size; j++) {
             let current = masterOfCells[i][j]
 
-            if (current.openTo.length == 1) {
+            if (current.openTo.length === 1) {
                 let neighbours = getNeighbours(current)
                 let chosen = neighbours[Math.floor(Math.random() * neighbours.length)]
 
@@ -156,8 +156,10 @@ function braid() {
                 current.openDirection.push(getDirection(current, chosen))
                 chosen.openTo.push(current)
                 chosen.openDirection.push(getDirection(chosen, current))
+                masterOfCells[i][j] = current
+                masterOfCells[chosen.x][chosen.y] = chosen
             }
-            if (Math.random() < 0.2) {
+            else if (Math.random() < 0.25) {
                 let neighbours = getNeighbours(current)
                 let chosen = neighbours[Math.floor(Math.random() * neighbours.length)]
 
@@ -165,6 +167,8 @@ function braid() {
                 current.openDirection.push(getDirection(current, chosen))
                 chosen.openTo.push(current)
                 chosen.openDirection.push(getDirection(chosen, current))
+                masterOfCells[i][j] = current
+                masterOfCells[chosen.x][chosen.y] = chosen
             }
         }
     }
