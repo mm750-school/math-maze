@@ -136,12 +136,10 @@ async function explore(startCell) { //iterative with stack
 }
 
 function braid() {
-
     for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
             let current = masterOfCells[i][j]
 
-            if (current.isDeepest) return
             if (current.openTo.length == 1) {
                 let neighbours = getNeighbours(current)
                 let chosen = neighbours[Math.floor(Math.random() * neighbours.length)]
@@ -299,6 +297,7 @@ function currentCell() {
     return masterOfCells[x][y]
 }
 
+
 function updateCharacter() {
     let colliding = false;
     let collidingWall = []
@@ -308,36 +307,35 @@ function updateCharacter() {
         if (distanceX <= 100 && distanceY <= 100) {
             if (checkRectCircleCollision(wall, character)) {
                 colliding = true
-                collidingWall.push(new Vector(wall.x, wall.y))
+                collidingWall.push(wall)
             }
         }
     })
-    directions_blocked = []
-    collidingWall.forEach(wall => {
-        if (wall.y - character.y > 0) {
-            directions_blocked.push("south")
-            console.log(wall.y, 0, "south")
+    let collision_north
+    let collision_south
+    let collision_west
+    let collision_east
 
-        } if (wall.y - character.y < 0) {
-            directions_blocked.push("north")
-            console.log(wall.y, 0, "north")
+    collidingWall.forEach(colliding => {
+        let center = new Vector(colliding.width / 2 + colliding.x, colliding.height / 2 + colliding.y)
 
+        let maxDistanceX = (colliding.width / 2) + character.size
+        let maxDistanceY = (colliding.height / 2) + character.size
+
+        let distanceX = Math.abs(character.x - center.x)
+        let distanceY = Math.abs(character.y - center.y)
+
+        if (maxDistanceX - distanceX < maxDistanceY - distanceY) {
+            if (character.x < center.x) collision_east = true
+            if (character.x > center.x) collision_west = true
+        } else {
+            if (character.y < center.y) collision_south = true
+            if (character.y > center.y) collision_north = true
         }
-        if (wall.x - character.x > 0) {
-            directions_blocked.push("east")
-            console.log(wall.x, 0, "east")
-
-        } if (wall.x - character.x < 0) {
-            directions_blocked.push("west")
-            console.log(wall.x, 0, "west")
-
-        }
+        //console.log(colliding)
     })
-    console.log(directions_blocked)
-    collision_north = directions_blocked.includes("north")
-    collision_south = directions_blocked.includes("south")
-    collision_west = directions_blocked.includes("west")
-    collision_east = directions_blocked.includes("east")
+
+
     if (keys.w && !collision_north || keys.ArrowUp && !collision_north) character.y -= character.speed;
     if (keys.s && !collision_south || keys.ArrowDown && !collision_south) character.y += character.speed;
     if (keys.a && !collision_west || keys.ArrowLeft && !collision_west) character.x -= character.speed;
