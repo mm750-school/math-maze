@@ -292,8 +292,8 @@ function updateFog(visibility) {
 function currentCell() {
     let x = Math.floor(character.x / 40)
     let y = Math.floor(character.y / 40)
-    ctx.fillStyle = "rgb(255, 255, 255)"
-    ctx.fillRect(x * 40, y * 40, 5, 5)
+    // ctx.fillStyle = "rgb(255, 255, 255)"
+    // ctx.fillRect(x * 40, y * 40, 5, 5)
     return masterOfCells[x][y]
 }
 
