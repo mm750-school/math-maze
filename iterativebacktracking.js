@@ -66,12 +66,14 @@ const size = 14
 const cellSize = (dimensions.x - 5) / size;
 const halfSize = cellSize / 2
 
+let masterOfCells = []
+function SetEmptyMaster() {
+    masterOfCells = Array.from(Array(size), _ => Array(size).fill(new Cell()));
 
-let masterOfCells = Array.from(Array(size), _ => Array(size).fill(new Cell()));
-
-for (let i = 0; i < size; i++) {
-    for (let j = 0; j < size; j++) {
-        masterOfCells[i][j] = new Cell(i, j)
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+            masterOfCells[i][j] = new Cell(i, j)
+        }
     }
 }
 visitedStack = []
@@ -85,18 +87,24 @@ window.addEventListener('keyup', (e) => {
     if (e.key in keys) keys[e.key] = false;
 });
 window.addEventListener('keyup', (e) => {
-    if (e.key === "Enter" && finished) {
-        window.location.reload()
+    if (e.key == "Enter" && finished) {
+        start()
     }
 })
-let start = new Vector(Math.floor(Math.random() * size), Math.floor(Math.random() * size))
-character.x = start.x * cellSize + halfSize
-character.y = start.y * cellSize + halfSize
-character.size = cellSize / 8
-explore(masterOfCells[start.x][start.y])
-const walls = calculateWalls()
+let walls
+start()
+function start() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    SetEmptyMaster()
+    finished = false
+    let start = new Vector(Math.floor(Math.random() * size), Math.floor(Math.random() * size))
+    character.x = start.x * cellSize + halfSize
+    character.y = start.y * cellSize + halfSize
+    character.size = cellSize / 8
+    explore(masterOfCells[start.x][start.y])
+    walls = calculateWalls()
+}
 gameLoop()
-
 
 async function explore(startCell) { //iterative with stack
     startCell.visited = true;
